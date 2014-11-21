@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/signup_tv_label_signup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginTop="5dp"
+        android:text="Sign Up"
+        android:textSize="30sp" />
+    
+    <!-- Profile pic -->
+    
+     <ImageView
+        android:id="@+id/signup_img_profilepic"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/signup_tv_label_signup"
+        android:layout_toRightOf="@+id/signup_tv_label_signup"
+        android:src="@drawable/ic_profilepic_placeholder" />
+
+    <!-- User name -->
+
+    <LinearLayout
+        android:id="@+id/signup_ll_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/signup_img_profilepic"
+        android:layout_marginTop="10dp"
+        android:weightSum="1" >
+
+        <EditText
+            android:id="@+id/signup_et_field_firstname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:ems="10"
+            android:hint="First Name"
+            android:inputType="textPersonName" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/signup_et_field_lastname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:ems="10"
+            android:hint="Last Name"
+            android:inputType="textEmailAddress" />
+    </LinearLayout>
+
+    <!-- User email address -->
+
+    <EditText
+        android:id="@+id/signup_et_field_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/signup_ll_name"
+        android:layout_below="@+id/signup_ll_name"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="Email address"
+        android:inputType="textEmailAddress" />
+
+    <!-- User password -->
+
+    <EditText
+        android:id="@+id/signup_et_field_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/signup_et_field_email"
+        android:layout_below="@+id/signup_et_field_email"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/signup_btn_signup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/signup_et_field_password"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp"
+        android:text="Sign Up" />
+
+
+</RelativeLayout>
