@@ -38,5 +38,16 @@ public class Post
 	{
 		return description;
 	}
+	
+	public boolean equals( Post other )
+	{
+		if( this.author.equals(other.getAuthor()) && this.topic.equals(other.getTopic()) && 
+				this.header.equals(other.getHeader()) && this.description.equals(other.getDescription()) )
+		{
+			return true;
+		}
+		else
+			return false;
+	}
 
 }

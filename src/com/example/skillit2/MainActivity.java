@@ -2,20 +2,29 @@ package com.example.skillit2;
 
 
 import java.util.ArrayList;
-
+import java.util.List;
 import android.os.Bundle;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,24 +38,38 @@ public class MainActivity extends Activity
 	private ListView lvNewsFeed;
 
 	private Button addPost;
-	private Button filterResults;
+	private Button filterPosts;
 
+	//Filter Dialog
 	private CheckBox cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9;
 	private ArrayList<Integer> selectedFilters;
 
-	//	private Spinner topics;
-	//	private Spinner starters;
+	//Filter text on main screen
+	private TextView tv_filters;
+	
+	//Dialog for Add Post
+	private Spinner sp_topics;
+	private RadioButton rb_help;
+	private RadioButton rb_share;
+	private RadioGroup rg_buttons;
+	private EditText et_description;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		//Change color of action bar
+		ActionBar bar = getActionBar();
+		bar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#3498db")));
+
 		data = new AppData();
 		selectedFilters = new ArrayList<Integer>();
 
-		addPost = (Button) findViewById( R.id.tv_addPost );
-		filterResults = (Button) findViewById( R.id.tv_filterResults );
+		addPost = (Button) findViewById( R.id.btn_addPost );
+		filterPosts = (Button) findViewById( R.id.btn_filterPosts );
+		
+		tv_filters = (TextView) findViewById( R.id.tv_filters );
 
 		lvNewsFeed = (ListView) findViewById( R.id.lv_newsfeed );
 		newsFeedAdapter = new PostListAdapter(this, data);
@@ -71,19 +94,26 @@ public class MainActivity extends Activity
 	{
 		lvNewsFeed.setOnItemClickListener( new AdapterView.OnItemClickListener() 
 		{
+			private Post selectedPost;
+			
 			public void onItemClick(AdapterView<?> parentAdapter, View view, int position, long id) 
 			{
-				RelativeLayout clickedView = (RelativeLayout) view;
-				TextView tv = (TextView) clickedView.findViewById(R.id.post_topic);
-				String text = (String) tv.getText();
-
-				Post post = data.getPost(position);
-
+				selectedPost = data.getPost(position);
+				showDialog(view);
+			}
+			
+			public void showDialog( View view )
+			{
 				new AlertDialog.Builder(view.getContext())
-				.setMessage("Do you want to work with " + post.getAuthor() + " on " + post.getDescription() + "?" )
+				.setMessage( getMessage() )
 				.setPositiveButton("I'm in", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) { 
-						// continue with delete
+						Intent nextScreen = new Intent(getApplicationContext(), ConversationActivity.class);
+						nextScreen.putExtra("otherPerson",  selectedPost.getAuthor());
+						nextScreen.putExtra("header",  selectedPost.getHeader());
+						nextScreen.putExtra("description",  selectedPost.getDescription());
+						nextScreen.putExtra("topic",  selectedPost.getTopic());
+						startActivity(nextScreen);
 					}
 				})
 				.setNegativeButton("Not now...", new DialogInterface.OnClickListener() {
@@ -92,63 +122,108 @@ public class MainActivity extends Activity
 					}
 				})
 				.show();
-
 			}
+
+			public String getMessage()
+			{
+				if( selectedPost.getHeader().contains("help") )
+					return selectedPost.getAuthor() + " needs help on: \"" + selectedPost.getDescription() + "\".\n\nCan you help?";
+				else
+					return selectedPost.getAuthor() + " wants to share: \"" + selectedPost.getDescription() + "\".\n\nWanna learn?";
+			}
+			
+
 		});
 	}
 
 	private void setupFilterClickListener()
 	{
-		filterResults.setOnClickListener( new OnClickListener()  
+		filterPosts.setOnClickListener( new OnClickListener()  
 		{
+			public void addListenerOnCheckbox(CheckBox cb) {
+				cb.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						//is box checked?
+						CheckBox box = (CheckBox)v;
+						if ( box.isChecked() )
+							selectedFilters.add( findId(box.getText().toString()) );
+						else
+							selectedFilters.remove( new Integer(findId(box.getText().toString())) );
+					}
+					
+					private int findId( String text )
+					{
+						for( int i=0; i<Post.TOPICS.length; i++ )
+						{
+							String s = Post.TOPICS[i];
+							if( text.equals(s))
+								return i;
+						}
+						return -1;
+					}
+				});
+
+			}
+
 			public void onClick(View view) 
 			{
-				AlertDialog dialog; 
+				LayoutInflater li = LayoutInflater.from(view.getContext());
+                View layout = li.inflate(R.layout.dialog_filter_results, null);
 
-				AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-				builder.setTitle("Filter Results");
-				builder.setMultiChoiceItems(Post.TOPICS, null,
-						new DialogInterface.OnMultiChoiceClickListener() {
-					// indexSelected contains the index of item (of which checkbox checked)
-					@Override
-					public void onClick(DialogInterface dialog, int indexSelected,
-							boolean isChecked) {
-						if (isChecked) {
-							// If the user checked the item, add it to the selected items
-							// write your code when user checked the checkbox 
-							if(!selectedFilters.contains(indexSelected))
-								selectedFilters.add(indexSelected);
-						} else if (selectedFilters.contains(indexSelected)) {
-							// Else, if the item is already in the array, remove it 
-							// write your code when user Unchecked the checkbox 
-							selectedFilters.remove(Integer.valueOf(indexSelected));
-						}
-					}
-				})
-				// Set the action buttons
-				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						//  Your code when user clicked on OK
+                AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+                alert.setView(layout);				
+				alert.setTitle("Filter Posts");
+
+				//Checkboxes
+				for(int i=1; i<=9; i++)
+				{
+					int id = getResources().getIdentifier("cb" + i, "id", getPackageName());
+					CheckBox cb = (CheckBox)layout.findViewById(id);
+					addListenerOnCheckbox(cb);
+					
+					if( selectedFilters.contains(i-1) )
+						cb.setChecked(true);
+				}
+				
+				//Add buttons
+				alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) 
+					{ 
 						Toast.makeText(getApplicationContext(), "Preferences saved", Toast.LENGTH_LONG).show();
 						ArrayList<String> topicList = new ArrayList<String>();
+						
+						String filters = "Filters: ";
 						for( int i: selectedFilters )
+						{
 							topicList.add(Post.TOPICS[i]);
+							filters += Post.TOPICS[i] + ", ";
+						}
+						
+						if(filters.trim().length() > "Filters: ".length())
+						{
+							tv_filters.setText(filters.substring(0, filters.length()-2));
+							tv_filters.setVisibility(View.VISIBLE);
+						}
+						else
+						{
+							tv_filters.setVisibility(View.GONE);
+						}
 						
 						newsFeedAdapter.filterPosts(topicList);
 						newsFeedAdapter.notifyDataSetInvalidated();
 					}
-				})
-				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						//  Your code when user clicked on Cancel
-						selectedFilters.clear();
+				});
+				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) 
+					{ 
+						// do nothing
 					}
 				});
+
+				alert.show();
 				
-				dialog = builder.create();//AlertDialog dialog; create like this outside onClick
-				dialog.show();
 			}
 
 		});
@@ -160,50 +235,53 @@ public class MainActivity extends Activity
 		{
 			public void onClick(View view) 
 			{
-				new AlertDialog.Builder(view.getContext())
-				.setMessage("Add Post...")
-				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				LayoutInflater li = LayoutInflater.from(view.getContext());
+                View layout = li.inflate(R.layout.dialog_add_post, null);
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+                alert.setView(layout);				
+				alert.setTitle("Add Post");
+
+				//Spinner 1: Add list of topics to spinner
+				sp_topics = (Spinner)layout.findViewById(R.id.spinner_postTopic); 
+				ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(),
+						android.R.layout.simple_spinner_item, Post.TOPICS);
+				dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				sp_topics.setAdapter(dataAdapter);
+				
+				//Radio buttons
+				rg_buttons = (RadioGroup)layout.findViewById(R.id.rg_radioButtons);
+				rb_help = (RadioButton)layout.findViewById(R.id.rb_help);
+				rb_share = (RadioButton)layout.findViewById(R.id.rb_share);
+				
+				//Edit Text
+				et_description = (EditText)layout.findViewById(R.id.et_postDescription);
+				
+				//Add buttons
+				alert.setPositiveButton("Post", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) { 
-						// continue with delete
+						String topic = sp_topics.getSelectedItem().toString();
+						String desc = et_description.getText().toString().trim();
+						
+						// get selected radio button from radioGroup
+						int selectedId = rg_buttons.getCheckedRadioButtonId();
+						Post post;
+						if( rb_help.getId() == selectedId )
+							post = new Post("Mike Jones", topic, Post.HEADERS[0], desc );
+						else
+							post = new Post("Mike Jones", topic, Post.HEADERS[1], desc );
+						
+						newsFeedAdapter.addPost(post);
+						newsFeedAdapter.notifyDataSetInvalidated();
 					}
-				})
-				.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+				});
+				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) { 
 						// do nothing
 					}
-				})
-				.show();
+				});
 
-				//				LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-				//		        View layout = inflater.inflate(R.layout.dialog_add_post, (ViewGroup) findViewById(R.id.root));
-				//				
-				//				// custom dialog
-				//				final Dialog dialog = new Dialog(view.getContext());
-				//				dialog.setContentView(R.layout.dialog_add_post);
-				//				dialog.setTitle("Add Post");
-				//				
-				//				// Add list of topics to spinner
-				//				topics = (Spinner) findViewById(R.id.spinner_postTopic); 
-				//				List<String> list = new ArrayList<String>();
-				//				list.add("Cooking");
-				//				list.add("Music");
-				//				list.add("CS106A");
-				//				ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(view.getContext(),
-				//						android.R.layout.simple_spinner_item, list);
-				//				// dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				//				topics.setAdapter(dataAdapter);
-				//
-				//				//Add two choice to spinner for post description sentence starter
-				//				starters = (Spinner) findViewById(R.id.spinner_postStarter); 
-				//				List<String> list2 = new ArrayList<String>();
-				//				list2.add("Help me with...");
-				//				list2.add("I can share...");
-				//				ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(view.getContext(),
-				//						android.R.layout.simple_spinner_item, list2);
-				//				// dataAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				//				starters.setAdapter(dataAdapter2);
-				//
-				//				dialog.show();	
+				alert.show();	
 			}
 		});
 	}

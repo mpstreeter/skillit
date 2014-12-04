@@ -2,37 +2,45 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    
+
     <Spinner
-	    android:id="@+id/spinner_postTopic"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentTop="true"
-	    android:layout_alignParentLeft="true" />
-    
-    <LinearLayout
-        android:id="@+id/ll_postDialog"
+        android:id="@+id/spinner_postTopic"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="10dp" />
+
+    <RadioGroup
+        android:id="@+id/rg_radioButtons"
         android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spinner_postTopic"
         android:layout_below="@+id/spinner_postTopic"
-	    android:layout_alignParentLeft="true"
-	    android:gravity="center"
-	    android:layout_marginBottom="5dp"
-	    android:orientation="horizontal" >
-	 
-        <Spinner
-		    android:id="@+id/spinner_postStarter"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content" />
-        
-        <TextView
-	        android:id="@+id/tv_postDescription"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:hint="Finish sentence..."
-	        android:layout_marginRight="30dp"
-	        android:textAppearance="?android:attr/textAppearanceMedium" />
-        
-     </LinearLayout>
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/rb_help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:text="I need help with" />
+
+        <RadioButton
+            android:id="@+id/rb_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="I want to share" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/et_postDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/rg_radioButtons"
+        android:layout_below="@+id/rg_radioButtons"
+        android:layout_marginBottom="30dp"
+        android:hint="Say something" />
 
 </RelativeLayout>

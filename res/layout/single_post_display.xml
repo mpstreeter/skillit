@@ -1,42 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
+    android:layout_height="match_parent"
+    android:padding="10dp" >
+    
     <TextView
         android:id="@+id/post_topic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:layout_marginLeft="5dp"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:text="CS106A" />
+        android:layout_toRightOf="@+id/post_header"
+        android:textSize="15sp"
+        android:textStyle="italic|bold"
+        android:layout_alignTop="@+id/post_header"
+        android:text="Engineering" />
     
     <TextView
         android:id="@+id/post_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="20dp"
-        android:textSize="13sp"
-        android:textStyle="italic"
-        android:textColor="#696969"
-        android:layout_toRightOf="@+id/post_topic"
-        android:gravity="right"
-		android:layout_alignParentRight="true"
-        android:text="Posted today" />
+        android:layout_marginRight="10dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:text="I need help with" />
     
     <TextView
         android:id="@+id/post_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="5dp"
-        android:paddingRight="5dp"
-        android:textSize="16sp"
-        android:layout_below="@+id/post_topic"
-        android:layout_alignLeft="@+id/post_topic"
-        android:text="I need help with... " />
+        android:textSize="18sp"
+        android:layout_below="@+id/post_header"
+        android:layout_alignLeft="@+id/post_header"
+        android:text="Learning how to make Karel the Robot walk in a box" />
     
-    
-
 </RelativeLayout>

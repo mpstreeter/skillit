@@ -13,7 +13,7 @@ import android.widget.*;
 public class PostListAdapter extends ArrayAdapter<Post> {
 
 	private Context context;
-	private List<Post> items;
+//	private List<Post> items;
 	private TextView topic;
 	private TextView details;
 	private TextView header;	
@@ -23,20 +23,20 @@ public class PostListAdapter extends ArrayAdapter<Post> {
 	{
 		super(c, R.layout.single_post_display, dataSource.getPosts());
 		context = c;
-		items = dataSource.getPosts();
+//		items = dataSource.getPosts();
 		data = dataSource;
 	}
 
 	@Override
 	public int getCount() 
 	{
-		return items.size();
+		return data.getPosts().size();
 	}
 
 	@Override
 	public Post getItem(int position) 
 	{	
-		return items.get(position);
+		return data.getPosts().get(position);
 	}
 
 	@Override
@@ -48,7 +48,12 @@ public class PostListAdapter extends ArrayAdapter<Post> {
 	public void filterPosts(ArrayList<String> topicList)
 	{
 		data.filterPosts(topicList);
-		items = data.getPosts();
+//		items = data.getPosts();
+	}
+	
+	public void addPost(Post post)
+	{
+		data.addPost(post);
 	}
 
 	@Override
@@ -59,15 +64,15 @@ public class PostListAdapter extends ArrayAdapter<Post> {
 		header = (TextView)vi.findViewById(R.id.post_header); 
 		details = (TextView)vi.findViewById(R.id.post_details); 
 		
-		Post item = items.get(position);
+		Post item = data.getPosts().get(position);
 		
 		topic.setText(item.getTopic());
 		
 		header.setText(item.getHeader());
 		if( item.getHeader().contains("help") )
-			header.setTextColor(Color.parseColor("#333676"));
+			header.setTextColor(Color.parseColor("#2980b9"));
 		else
-			header.setTextColor(Color.parseColor("#AA8C39"));
+			header.setTextColor(Color.parseColor("#d35400"));
 		
 		details.setText(item.getDescription());
 		
